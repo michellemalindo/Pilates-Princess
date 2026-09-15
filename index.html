@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilates Princess 💗 30-Day Challenge Tracker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👑</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="glitter-overlay" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <h1 class="logo"><span class="logo-emoji">🐆</span> PILATES PRINCESS <span class="logo-emoji">💗</span></h1>
+    <p class="tagline">✨ your 30-day pilates glow-up challenge ✨</p>
+  </div>
+</header>
+
+<main>
+
+  <section class="dashboard">
+
+    <div class="card progress-card pixel-border">
+      <h2 class="card-title">💅 YOUR PROGRESS</h2>
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBar"><span class="progress-shine"></span></div>
+      </div>
+      <p class="progress-text" id="progressText">0 / 30 Days Complete</p>
+      <div class="streak-row">
+        <span id="streakText">🔥 0 day streak</span>
+      </div>
+    </div>
+
+    <div class="card today-card pixel-border" id="todayCard">
+      <!-- populated by JS -->
+    </div>
+
+    <div class="card settings-card pixel-border">
+      <h2 class="card-title">⚙️ SETTINGS</h2>
+      <label class="settings-label">
+        Challenge Start Date
+        <input type="date" id="startDateInput">
+      </label>
+      <button class="btn btn-notif" id="enableNotifBtn">🔔 Enable 7PM Reminders</button>
+      <p class="notif-status" id="notifStatus">Reminders are off</p>
+    </div>
+
+  </section>
+
+  <section class="days-section">
+    <h2 class="section-title">🐾 THE 30 DAYS 🐾</h2>
+    <div class="days-grid" id="daysGrid">
+      <!-- 30 day cards populated by JS -->
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>made with 💗 for princesses who pilates</p>
+</footer>
+
+<!-- Day Detail Modal -->
+<div class="modal-overlay" id="dayModal">
+  <div class="modal pixel-border" id="modalBox">
+    <button class="close-btn" id="closeModal" aria-label="Close">✖</button>
+    <h2 class="modal-title" id="modalDayTitle">Day 1</h2>
+
+    <div class="video-link-input" id="videoInputWrap">
+      <label for="videoUrlInput">📼 YouTube link for this day</label>
+      <div class="video-input-row">
+        <input type="text" id="videoUrlInput" placeholder="Paste YouTube video URL...">
+        <button class="btn btn-small" id="saveVideoBtn">Save</button>
+      </div>
+    </div>
+
+    <div class="video-embed-wrap" id="videoEmbedWrap">
+      <p class="no-video-msg">Paste a YouTube link above to load today's workout! 🎀</p>
+    </div>
+
+    <div class="done-section">
+      <label class="done-checkbox-label">
+        <input type="checkbox" id="doneCheckbox">
+        <span class="checkbox-custom"></span>
+        Done! ✅
+      </label>
+    </div>
+
+    <div class="notes-section">
+      <label for="notesArea">💭 Notes / Reflections</label>
+      <textarea id="notesArea" placeholder="How did today's workout feel? Any wins to celebrate?"></textarea>
+    </div>
+
+    <button class="btn btn-save" id="saveModalBtn">Save & Close</button>
+  </div>
+</div>
+
+<!-- Congrats Banner -->
+<div class="congrats-banner" id="congratsBanner">
+  <div class="congrats-content pixel-border">
+    <div class="congrats-emojis">🎉💖👑💖🎉</div>
+    <div class="congrats-text">YOU DID IT!</div>
+    <div class="congrats-sub">Day <span id="congratsDay"></span> complete, princess!</div>
+  </div>
+</div>
+
+<!-- In-page reminder toast -->
+<div class="page-reminder" id="pageReminder"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
