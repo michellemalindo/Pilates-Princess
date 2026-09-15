@@ -2,7 +2,7 @@
 
 const STORAGE_KEY = 'pilatesPrincessData';
 const TOTAL_DAYS = 30;
-const REMINDER_HOUR = 19; // 7pm
+const DEFAULT_REMINDER_TIME = '19:00'; // 7pm, used until the user picks their own
 
 let state = loadState();
 let activeDay = null;
@@ -19,7 +19,10 @@ function loadState() {
   if (raw) {
     try {
       const parsed = JSON.parse(raw);
-      if (parsed.days && parsed.days.length === TOTAL_DAYS) return parsed;
+      if (parsed.days && parsed.days.length === TOTAL_DAYS) {
+        if (!parsed.reminderTime) parsed.reminderTime = DEFAULT_REMINDER_TIME;
+        return parsed;
+      }
     } catch (e) { /* fall through to defaults */ }
   }
   const days = [];
@@ -29,9 +32,22 @@ function loadState() {
   return {
     startDate: todayStr(),
     reminderEnabled: false,
+    reminderTime: DEFAULT_REMINDER_TIME,
     lastNotifiedDate: null,
     days
   };
+}
+
+function getReminderMinutes() {
+  const [h, m] = (state.reminderTime || DEFAULT_REMINDER_TIME).split(':').map(Number);
+  return h * 60 + m;
+}
+
+function formatTime12h(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour12 = ((h + 11) % 12) + 1;
+  return `${hour12}:${String(m).padStart(2, '0')} ${period}`;
 }
 
 function saveState() {
@@ -226,7 +242,7 @@ function updateNotifStatusText() {
     return;
   }
   if (Notification.permission === 'granted' && state.reminderEnabled) {
-    statusEl.textContent = `Reminders ON — you'll be pinged at ${REMINDER_HOUR}:00 while this tab is open`;
+    statusEl.textContent = `Reminders ON — you'll be pinged at ${formatTime12h(state.reminderTime)} while this tab is open`;
   } else if (Notification.permission === 'denied') {
     statusEl.textContent = 'Notifications blocked — enable them in your browser settings';
   } else {
@@ -243,7 +259,7 @@ function enableNotifications() {
     if (permission === 'granted') {
       state.reminderEnabled = true;
       saveState();
-      new Notification('Pilates Princess 💗', { body: "You'll get a reminder at 7pm on workout days!" });
+      new Notification('Pilates Princess 💗', { body: `You'll get a reminder at ${formatTime12h(state.reminderTime)} on workout days!` });
     }
     updateNotifStatusText();
   });
@@ -259,8 +275,9 @@ function checkReminder() {
 
   const dayObj = state.days[dayNum - 1];
   const today = todayStr();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-  if (now.getHours() >= REMINDER_HOUR && state.lastNotifiedDate !== today && !dayObj.done) {
+  if (nowMinutes >= getReminderMinutes() && state.lastNotifiedDate !== today && !dayObj.done) {
     new Notification('Pilates Princess 💗 Time to workout!', {
       body: `Day ${dayNum} is waiting for you. Tap in and get your glow on! 🐆`
     });
@@ -279,7 +296,8 @@ function updatePageReminderToast() {
     return;
   }
   const dayObj = state.days[dayNum - 1];
-  if (now.getHours() >= REMINDER_HOUR && !dayObj.done) {
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  if (nowMinutes >= getReminderMinutes() && !dayObj.done) {
     toast.innerHTML = `💗 It's workout time! Day ${dayNum} is still waiting for you.<br><button class="btn btn-small" id="toastGoBtn">Let's go!</button>`;
     toast.classList.add('is-shown');
     document.getElementById('toastGoBtn').addEventListener('click', () => {
@@ -299,6 +317,15 @@ function init() {
     state.startDate = e.target.value || todayStr();
     saveState();
     renderAll();
+  });
+
+  document.getElementById('reminderTimeInput').value = state.reminderTime;
+  document.getElementById('reminderTimeInput').addEventListener('change', (e) => {
+    state.reminderTime = e.target.value || DEFAULT_REMINDER_TIME;
+    state.lastNotifiedDate = null;
+    saveState();
+    updateNotifStatusText();
+    updatePageReminderToast();
   });
 
   document.getElementById('enableNotifBtn').addEventListener('click', enableNotifications);
